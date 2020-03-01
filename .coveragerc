@@ -1,0 +1,5 @@
+[run]
+include = aprendizaje_automatico_aplicado/*
+
+[report]
+show_missing = True

@@ -1,0 +1,36 @@
+import numpy as np
+from scipy.cluster.hierarchy import dendrogram
+
+
+def plot_dendrogram(model, **kwargs):
+    """Representa una denograma a partir de un modelo
+
+    Representa un denograma a partir de un modelo de clase AgglomerativeClustering. 
+    
+    Parameters
+    ----------
+    model : AgglomerativeClustering
+        El modelo que se desea representar
+    """
+
+    # Valida que el modelo tiene la propiedad distances_
+    if not hasattr(model, 'distances_'):
+        print("Es necesario entrenar el modelo con la opción 'distance_threshold'")
+        return
+
+    # Cuenta los elementos en cada nodo
+    counts = np.zeros(model.children_.shape[0])
+    n_samples = len(model.labels_)
+    for i, merge in enumerate(model.children_):
+        current_count = 0
+        for child_idx in merge:
+            if child_idx < n_samples:
+                current_count += 1
+            else:
+                current_count += counts[child_idx - n_samples]
+        counts[i] = current_count
+
+    linkage_matrix = np.column_stack([model.children_, model.distances_,
+                                      counts]).astype(float)
+
+    dendrogram(linkage_matrix, **kwargs)
